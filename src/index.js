@@ -22,14 +22,15 @@ interface.prompt();
 interface.on('line', input => {
   let result = 0;
   if (input) {
-    const {command, args} = parseCommand(input);
-
-    if (command === 'exit' || command === 'logout') {
+    const {command, args, env} = parseCommand(input);
+    if (!command) {
+      Object.keys(env).forEach(key => state.setEnv(key, env[key]));
+    } else if (command === 'exit' || command === 'logout') {
       exit(0);
     } else if (command in builtins) {
       result = builtins[command](command, ...args);
     } else if (exec.find(command)) {
-      result = exec.exec(state.getWorkingDirectory(), exec.find(command) + ' ' + args.join(' '));
+      result = exec.exec(state.getWorkingDirectory(), exec.find(command) + ' ' + args.join(' '), env);
     } else {
       process.stderr.write(`${command}: command not found`);
       process.stderr.write(os.EOL);

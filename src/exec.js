@@ -17,12 +17,12 @@ exports.find = function find(command) {
   return null;
 };
 
-exports.exec = function exec(workingDirectory, command) {
+exports.exec = function exec(workingDirectory, command, env) {
   try {
     execSync(command, {
       cwd: workingDirectory,
       stdio: 'inherit',
-      env: process.env
+      env: {...process.env, ...env}
     });
 
     return 0;
