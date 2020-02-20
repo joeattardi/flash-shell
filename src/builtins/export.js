@@ -6,4 +6,5 @@ module.exports = function exportEnv(command, arg) {
   const value = arg.slice(index + 1);
   
   state.setEnv(key, value);
+  return 0;
 };

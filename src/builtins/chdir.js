@@ -4,12 +4,18 @@ const path = require('path');
 
 const state = require('../state');
 
+let lastDirectory = state.getWorkingDirectory();
+
 module.exports = function chdir(command, dir) {
-  actualDir = dir ? dir.replace(/~/g, os.homedir()) : os.homedir();
+  let actualDir = dir ? dir.replace(/~/g, os.homedir()) : os.homedir();
+  if (dir === '-') {
+    actualDir = lastDirectory;
+  }
 
   const absolutePath = command[0] === '/' ? path.resolve(actualDir) : path.resolve(state.getWorkingDirectory(), actualDir);
 
   if (fs.existsSync(absolutePath)) {
+    lastDirectory = state.getWorkingDirectory();
     state.setWorkingDirectory(absolutePath);
     return 0;
   }
