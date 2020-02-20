@@ -24,7 +24,9 @@ interface.on('line', input => {
   if (input) {
     const command = parseCommand(input);
   
-    if (command[0] in builtins) {
+    if (command[0] === 'exit' || command[0] === 'logout') {
+      exit(0);
+    } else if (command[0] in builtins) {
       result = builtins[command[0]](...command);
     } else if (exec.find(command[0])) {
       result = exec.exec(state.getWorkingDirectory(), exec.find(command[0]) + ' ' + [...command.slice(1)].join(' '));
@@ -44,4 +46,8 @@ interface.on('line', input => {
 function updatePrompt(interface) {
   const pathParts = state.getWorkingDirectory().split(path.sep);
   interface.setPrompt(`${chalk.cyanBright(pathParts[pathParts.length - 1])} ⚡️ $ `);
+}
+
+function exit(status) {
+  process.exit(status);
 }
