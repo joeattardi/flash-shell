@@ -3,3 +3,4 @@ exports.pwd = require('./pwd');
 exports.echo = require('./echo');
 exports['export'] = require('./export');
 exports.logout = exports.exit = require('./logout');
+exports.history = require('./history');

@@ -1,3 +1,5 @@
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const SPECIAL_ENV = ['?'];
@@ -11,6 +13,10 @@ const env = {
 };
 
 const aliases = {};
+
+let history = [];
+
+const HISTORY_FILE = path.resolve(os.homedir(), '.flashHistory.json');
 
 exports.setWorkingDirectory = function setWorkingDirectory(dir) {
   cwd = dir;
@@ -34,8 +40,30 @@ exports.getEnvKeys = function getEnvKeys() {
 
 exports.setAlias = function(alias, command) {
   aliases[alias] = command;
-}
+};
 
 exports.getAlias = function(alias) {
   return aliases[alias];
-}
+};
+
+exports.getHistory = function() {
+  return history;
+};
+
+exports.addHistory = function(command) {
+  if (command !== 'history' && command !== history[history.length - 1]) {
+    history = [...history, command].slice(0, 5000);
+  }
+};
+
+exports.saveHistory = function () {
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history));
+};
+
+exports.loadHistory = function () {
+  if (fs.existsSync(HISTORY_FILE)) {
+    history = JSON.parse(fs.readFileSync(HISTORY_FILE, { encoding: 'utf8' }));
+  } else {
+    history = [];
+  }
+};
