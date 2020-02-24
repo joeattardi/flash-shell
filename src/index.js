@@ -47,8 +47,6 @@ interface.on('line', line => {
     const {command, args, env} = parseCommand(line);
     if (!command) {
       Object.keys(env).forEach(key => state.setEnv(key, env[key]));
-    } else if (command === 'exit' || command === 'logout') {
-      exit(0);
     } else if (command in builtins) {
       result = builtins[command](command, ...args);
     } else if (exec.find(command)) {
