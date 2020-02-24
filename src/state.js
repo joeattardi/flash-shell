@@ -10,6 +10,8 @@ const env = {
   '?': 0
 };
 
+const aliases = {};
+
 exports.setWorkingDirectory = function setWorkingDirectory(dir) {
   cwd = dir;
 };
@@ -29,3 +31,11 @@ exports.getEnv = function getEnv(key) {
 exports.getEnvKeys = function getEnvKeys() {
   return Object.keys(env).filter(key => !SPECIAL_ENV.includes(key));
 };
+
+exports.setAlias = function(alias, command) {
+  aliases[alias] = command;
+}
+
+exports.getAlias = function(alias) {
+  return aliases[alias];
+}

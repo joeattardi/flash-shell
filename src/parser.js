@@ -1,9 +1,11 @@
+const state = require('./state');
+
 exports.parseCommand = function parseCommand(line) {
   const argv = line.split(' ');
 
   let commandIndex = argv.findIndex(arg => !arg.includes('='));
-  const command = commandIndex >= 0 ? argv[commandIndex] : null;
-  const args = commandIndex >= 0 ? argv.slice(commandIndex + 1) : null;
+  let command = commandIndex >= 0 ? argv[commandIndex] : null;
+  let args = commandIndex >= 0 ? argv.slice(commandIndex + 1) : null;
 
   if (commandIndex === -1) {
     commandIndex = argv.length;
@@ -16,6 +18,13 @@ exports.parseCommand = function parseCommand(line) {
     previous[key] = value;
     return previous;
   }, {});
+
+  const alias = state.getAlias(command);
+  if (alias) {
+    const aliasParts = alias.split(/\s/);
+    command = aliasParts[0];
+    args = [...aliasParts.slice(1), ...args];
+  }
 
   return {
     command,
