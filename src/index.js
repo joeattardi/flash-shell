@@ -19,10 +19,32 @@ const interface = readline.createInterface({
 updatePrompt(interface);
 interface.prompt();
 
-interface.on('line', input => {
+let input = '';
+
+process.stdin.on('keypress', (chunk, key) => {
+  if (key.name === 'return') {
+    return;
+  } else if (key.name === 'backspace') {
+    input = input.slice(0, -1);
+  } else if (!key.ctrl && !key.meta && !key.shift) {
+    input += chunk;
+  }
+
+  const words = input.split(' ');
+  if (exec.find(words[0]) || words[0] in builtins) {
+    readline.moveCursor(process.stdout, input.length * -1, 0);
+    process.stdout.write(chalk.green(words[0]) + input.slice(words[0].length));
+  } else {
+    readline.moveCursor(process.stdout, input.length * -1, 0);
+    process.stdout.write(chalk.redBright(words[0]) + input.slice(words[0].length));
+  }
+});
+
+interface.on('line', line => {
   let result = 0;
-  if (input) {
-    const {command, args, env} = parseCommand(input);
+  input = '';
+  if (line) {
+    const {command, args, env} = parseCommand(line);
     if (!command) {
       Object.keys(env).forEach(key => state.setEnv(key, env[key]));
     } else if (command === 'exit' || command === 'logout') {
