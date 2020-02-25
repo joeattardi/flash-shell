@@ -2,7 +2,7 @@ const os = require('os');
 
 const state = require('../state');
 
-module.exports = function exportEnv(command, arg) {
+exports.execute = function exportEnv(command, arg) {
   if (!arg) {
     state.getEnvKeys().forEach(key => {
       process.stdout.write(`${key}=${state.getEnv(key)}`);

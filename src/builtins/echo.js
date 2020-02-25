@@ -2,7 +2,7 @@ const os = require('os');
 
 const state = require('../state');
 
-module.exports = function echo(...command) {
+exports.execute = function echo(...command) {
   const result = command.slice(1)
     .map(arg => {
       if (arg[0] === '$') {

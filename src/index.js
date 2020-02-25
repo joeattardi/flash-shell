@@ -15,26 +15,25 @@ const state = require('./state');
 
 init();
 
-const interface = readline.createInterface({
+const rlInterface = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   historySize: 0
 });
 
-updatePrompt(interface);
-interface.prompt();
+updatePrompt(rlInterface);
+rlInterface.prompt();
 
-input(interface);
+input(rlInterface, getPrompt);
 
-interface.on('line', line => {
+rlInterface.on('line', line => {
   let result = 0;
-  input = '';
   if (line) {
     const {command, args, env} = parseCommand(line);
     if (!command) {
       Object.keys(env).forEach(key => state.setEnv(key, env[key]));
     } else if (command in builtins) {
-      result = builtins[command](command, ...args);
+      result = builtins[command].execute(command, ...args);
     } else if (exec.find(command)) {
       result = exec.exec(state.getWorkingDirectory(), exec.find(command) + ' ' + args.join(' '), env);
     } else {
@@ -49,15 +48,15 @@ interface.on('line', line => {
 
   state.setEnv('?', result);
 
-  updatePrompt(interface);
-  interface.prompt();
+  updatePrompt(rlInterface);
+  rlInterface.prompt();
 });
 
-function updatePrompt(interface) {
-  const pathParts = state.getWorkingDirectory().split(path.sep);
-  interface.setPrompt(`${chalk.cyanBright(pathParts[pathParts.length - 1])} ⚡️ $ `);
+function updatePrompt(rlInterface) {
+  rlInterface.setPrompt(getPrompt());
 }
 
-function exit(status) {
-  process.exit(status);
+function getPrompt() {
+  const pathParts = state.getWorkingDirectory().split(path.sep);
+  return `${chalk.cyanBright(pathParts[pathParts.length - 1])} ⚡️ $ `;
 }

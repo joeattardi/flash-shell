@@ -1,6 +1,6 @@
 const state = require('../state');
 
-module.exports = function logout() {
+exports.execute = function logout() {
   state.saveHistory();
   process.exit(0);
 };

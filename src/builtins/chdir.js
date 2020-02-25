@@ -3,10 +3,11 @@ const os = require('os');
 const path = require('path');
 
 const state = require('../state');
+const util = require('../util');
 
 let lastDirectory = state.getWorkingDirectory();
 
-module.exports = function chdir(command, dir) {
+exports.execute = function chdir(command, dir) {
   let actualDir = dir ? dir.replace(/~/g, os.homedir()) : os.homedir();
   if (dir === '-') {
     actualDir = lastDirectory;
@@ -27,4 +28,13 @@ module.exports = function chdir(command, dir) {
   lastDirectory = state.getWorkingDirectory();
   state.setWorkingDirectory(absolutePath);
   return 0;
+};
+
+exports.completer = function completer([arg]) {
+  const cwd = state.getWorkingDirectory();
+  const entries = fs.readdirSync(cwd)
+    .filter(path => path.startsWith(arg))
+    .map(path => path.slice(arg.length));
+
+  return util.findCommonRoot(entries);
 };
