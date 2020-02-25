@@ -22,6 +22,11 @@ exports.processHistoryDown = function processHistoryDown(input) {
   return processHistory(historyIndex === history.length ? '' : history[historyIndex], input);
 };
 
+exports.findMatchingHistory = function findMatchingHistory(input) {
+  const history = [...state.getHistory()].reverse();
+  return history.find(entry => entry.startsWith(input));
+};
+
 function processHistory(historyCommand, input) {
   readline.moveCursor(process.stdout, input.length * -1, 0);
   readline.clearLine(process.stdout, 1);
