@@ -9,11 +9,9 @@ const chalk = require('chalk');
 const init = require('./init');
 const builtins = require('./builtins');
 const exec = require('./exec');
-const highlight = require('./highlight');
-const history = require('./history');
+const input = require('./input');
 const { parseCommand } = require('./parser');
 const state = require('./state');
-const suggest = require('./suggest');
 
 init();
 
@@ -26,34 +24,7 @@ const interface = readline.createInterface({
 updatePrompt(interface);
 interface.prompt();
 
-let input = '';
-
-process.stdin.on('keypress', (chunk, key) => {
-  if (key.name === 'd' && key.ctrl) {
-    builtins.logout();
-  } else if (key.name === 'up') {
-    input = interface.line = history.processHistoryUp(input);
-    highlight(input);
-  } else if (key.name === 'down') {
-    input = interface.line = history.processHistoryDown(input);
-    highlight(input);
-  } else if (key.name === 'right') {
-    input = suggest.completeSuggestion(input);
-    highlight(input);
-  } else if (key.name === 'return') {
-    return;
-  } else if (key.name === 'backspace') {
-    input = input.slice(0, -1);
-    highlight(input);
-    if (input) {
-      suggest.suggest(input);
-    }
-  } else if (!key.ctrl && !key.meta && chunk && key.name !== 'tab') {
-    input += chunk;
-    highlight(input);
-    suggest.suggest(input);
-  }
-});
+input(interface);
 
 interface.on('line', line => {
   let result = 0;
